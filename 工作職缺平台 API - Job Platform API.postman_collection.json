@@ -1,0 +1,444 @@
+{
+	"info": {
+		"_postman_id": "79704ada-ac83-42f6-86da-d4088cbde522",
+		"name": "工作職缺平台 API / Job Platform API",
+		"description": "Django Ninja + JWT 實現的職缺平台後端 API\n\n基於 SQLite 存儲，提供職缺的 CRUD 及搜索功能",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "11113104",
+		"_collection_link": "https://clc-global.postman.co/workspace/CLC_API~71b2253c-2cd2-4b18-bf0e-f3d72cba8b1e/collection/11113104-79704ada-ac83-42f6-86da-d4088cbde522?action=share&source=collection_link&creator=11113104"
+	},
+	"item": [
+		{
+			"name": "認證 / Authentication",
+			"item": [
+				{
+					"name": "獲取訪問令牌 / Get Access Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// 將 access token 與 refresh token 設定到 Postman Collection 變數中",
+									"let response = pm.response.json();",
+									"",
+									"pm.collectionVariables.set(\"access_token\", response.access);",
+									"pm.collectionVariables.set(\"refresh_token\", response.refresh);",
+									"",
+									"// Optional: 顯示在 Postman Console",
+									"console.log(\"Access Token:\", response.access);",
+									"console.log(\"Refresh Token:\", response.refresh);",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"\",\n    \"password\": \"\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/token",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"token"
+							]
+						},
+						"description": "使用用戶名和密碼獲取 JWT 訪問令牌和刷新令牌"
+					},
+					"response": []
+				},
+				{
+					"name": "刷新訪問令牌 / Refresh Access Token",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"refresh\": \"{{refresh_token}}\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/token/refresh",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"token",
+								"refresh"
+							]
+						},
+						"description": "使用刷新令牌獲取新的訪問令牌"
+					},
+					"response": []
+				}
+			],
+			"description": "JWT 認證相關端點，用於獲取和刷新訪問令牌"
+		},
+		{
+			"name": "職缺 / Job Postings",
+			"item": [
+				{
+					"name": "獲取職缺列表 / Get Job Listings",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/jobs/?limit=10&offset=0",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"jobs",
+								""
+							],
+							"query": [
+								{
+									"key": "search",
+									"value": "python",
+									"description": "搜索職缺標題、描述和公司名",
+									"disabled": true
+								},
+								{
+									"key": "status",
+									"value": "active",
+									"description": "按狀態過濾（active, expired, scheduled）",
+									"disabled": true
+								},
+								{
+									"key": "location",
+									"value": "Taipei",
+									"description": "按地點過濾",
+									"disabled": true
+								},
+								{
+									"key": "company",
+									"value": "Example",
+									"description": "按公司過濾",
+									"disabled": true
+								},
+								{
+									"key": "skill",
+									"value": "Python",
+									"description": "按技能過濾",
+									"disabled": true
+								},
+								{
+									"key": "sort_by",
+									"value": "posting_date",
+									"description": "排序字段（posting_date, expiration_date）",
+									"disabled": true
+								},
+								{
+									"key": "sort_desc",
+									"value": "false",
+									"description": "是否降序排序",
+									"disabled": true
+								},
+								{
+									"key": "limit",
+									"value": "10",
+									"description": "每頁數量"
+								},
+								{
+									"key": "offset",
+									"value": "0",
+									"description": "分頁偏移量"
+								}
+							]
+						},
+						"description": "獲取職缺列表，支持搜索、過濾和分頁"
+					},
+					"response": []
+				},
+				{
+					"name": "獲取單個職缺 / Get Single Job",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/jobs/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"jobs",
+								"1"
+							]
+						},
+						"description": "獲取單個職缺的詳細信息"
+					},
+					"response": []
+				},
+				{
+					"name": "創建職缺 / Create Job",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Senior Python Developer\",\n    \"description\": \"We are looking for a senior Python developer...\",\n    \"location\": \"Taipei\",\n    \"salary_min\": 70000,\n    \"salary_max\": 100000,\n    \"company_name\": \"Tech Solutions Ltd\",\n    \"posting_date\": \"2023-06-01\",\n    \"expiration_date\": \"2023-07-01\",\n    \"required_skills\": [\"Python\", \"Django\", \"REST API\", \"SQL\"]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/jobs/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"jobs",
+								""
+							]
+						},
+						"description": "創建新的職缺"
+					},
+					"response": []
+				},
+				{
+					"name": "更新職缺 / Update Job",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Senior Python Developer (Updated)\",\n    \"description\": \"We are looking for an experienced Python developer...\",\n    \"location\": \"Taipei\",\n    \"salary_min\": 75000,\n    \"salary_max\": 110000,\n    \"company_name\": \"Tech Solutions Ltd\",\n    \"posting_date\": \"2023-06-01\",\n    \"expiration_date\": \"2023-08-01\",\n    \"required_skills\": [\"Python\", \"Django\", \"REST API\", \"SQL\", \"Docker\"]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/jobs/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"jobs",
+								"1"
+							]
+						},
+						"description": "更新現有職缺（注意：不允許更改 company_name）"
+					},
+					"response": []
+				},
+				{
+					"name": "刪除職缺 / Delete Job",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/jobs/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"jobs",
+								"1"
+							]
+						},
+						"description": "刪除指定職缺"
+					},
+					"response": []
+				},
+				{
+					"name": "按狀態過濾職缺 / Filter Jobs by Status",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/jobs/?status=active",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"jobs",
+								""
+							],
+							"query": [
+								{
+									"key": "status",
+									"value": "active",
+									"description": "職缺狀態 (active, expired, scheduled)"
+								}
+							]
+						},
+						"description": "按狀態過濾職缺 (active 活躍, expired 過期, scheduled 預約)"
+					},
+					"response": []
+				},
+				{
+					"name": "搜索職缺 / Search Jobs",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/jobs/?search=python",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"jobs",
+								""
+							],
+							"query": [
+								{
+									"key": "search",
+									"value": "python",
+									"description": "搜索關鍵詞（標題、描述、公司名）"
+								}
+							]
+						},
+						"description": "搜索職缺標題、描述和公司名"
+					},
+					"response": []
+				}
+			],
+			"description": "職缺相關端點，用於創建、查詢、更新和刪除職缺"
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"if (pm.response.code === 200 || pm.response.code === 201) {",
+					"    if (pm.response.json().access) {",
+					"        pm.environment.set(\"access_token\", pm.response.json().access);",
+					"    }",
+					"    if (pm.response.json().refresh) {",
+					"        pm.environment.set(\"refresh_token\", pm.response.json().refresh);",
+					"    }",
+					"}"
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8000",
+			"type": "string"
+		},
+		{
+			"key": "access_token",
+			"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ3NjU5NDU4LCJpYXQiOjE3NDc2NTU4NTgsImp0aSI6ImQyYzE3ZmEyMWRkMTQ4NDQ5MmZkMjNjODFhYTk4MmQ4IiwidXNlcl9pZCI6Mn0.mxEA9Md4PqkpB970If2NW4GjvhGdGo1FNPIM-IgIPG8",
+			"type": "string"
+		},
+		{
+			"key": "refresh_token",
+			"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc0Nzc0MjI1OCwiaWF0IjoxNzQ3NjU1ODU4LCJqdGkiOiJmMDA4MDI2NmEwYWM0ZjY2YmIwZmQyNTRiZDQwZDVlZSIsInVzZXJfaWQiOjJ9.B8e918eGTuX97RVjvLibNUYgJeNkU21OQMj97SKNIXE",
+			"type": "string"
+		}
+	]
+}

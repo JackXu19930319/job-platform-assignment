@@ -3,7 +3,7 @@ from typing import List, Dict, Any
 from django.db.models import Q
 from django.http import Http404
 from django.contrib.auth import authenticate
-from ninja import Router, Query
+from ninja import Router, Query, Body, Schema
 from ninja.pagination import paginate
 from ninja_jwt.authentication import JWTAuth
 from ninja_jwt.tokens import RefreshToken
@@ -19,18 +19,26 @@ from jobs.schemas import (
     SuccessMessage
 )
 
+# 認證請求模型 / Authentication request models
+class TokenRequest(Schema):
+    username: str
+    password: str
+
+class RefreshRequest(Schema):
+    refresh: str
+
 # JWT 認證路由 / JWT Authentication router
 auth_router = Router(tags=["auth"])
 
 @auth_router.post("/token", response={200: Dict[str, Any], 401: ErrorMessage})
-def login(request, username: str, password: str):
+def login(request, data: TokenRequest = Body(...)):
     """
     獲取JWT令牌 / Get JWT token
     
     使用用戶名和密碼來獲取訪問令牌和刷新令牌
     Use username and password to get access token and refresh token
     """
-    user = authenticate(username=username, password=password)
+    user = authenticate(username=data.username, password=data.password)
     if user is None:
         return 401, {"detail": "Invalid credentials"}
     
@@ -42,7 +50,7 @@ def login(request, username: str, password: str):
     }
 
 @auth_router.post("/token/refresh", response={200: Dict[str, str], 401: ErrorMessage})
-def refresh_token(request, refresh: str):
+def refresh_token(request, data: RefreshRequest = Body(...)):
     """
     刷新訪問令牌 / Refresh access token
     
@@ -50,7 +58,7 @@ def refresh_token(request, refresh: str):
     Use refresh token to get new access token
     """
     try:
-        refresh_token = RefreshToken(refresh)
+        refresh_token = RefreshToken(data.refresh)
         return {
             "access": str(refresh_token.access_token),
         }
