@@ -1,0 +1,81 @@
+# Unified Coding & Interaction Rules for the Project
+
+## ⚠️ Fundamental Rules
+- All AI-assisted edits must strictly follow the rules below
+- Never modify unauthorized logic, architecture, or semantics
+- All suggestions must be practical, maintainable, and team-aligned
+
+---
+
+## 🧾 Commenting Rules
+1. All comments must be written in both Traditional Chinese and English. Simplified Chinese is strictly prohibited.
+2. Every function and class must include a comment describing its purpose
+3. Complex logic must include background or constraint explanations
+
+## 🪵 Logging Convention
+4. Logs must be concise and explicit, showing key states and variable values
+5. Avoid verbose debug logs and raw prints; use a logger and proper log levels (info/warn/error)
+
+## 📐 Code Quality Standard
+6. Naming must be meaningful and explicit (❌ `uid`, `amt`; ✅ `user_id`, `total_amount`)
+7. Each function must do exactly one thing (Single Responsibility Principle)
+8. All edge cases must be handled; no magic numbers — use constants or enums
+
+## 🌐 API & Sample Data
+9. If defining an API, annotate every parameter with purpose, default, and example
+10. Response formats must include both success and error JSON samples, with field descriptions
+
+## 🗂 Modular Grouping
+11. All logic must be clearly grouped by feature domain (folder or namespace)
+    - Course Management (Course Module)
+    - Registration Flow
+    - Payment Service
+12. Folder and file names must clearly reflect function
+
+## 🧩 Public Component Clarity
+13. Every exported / public function or class must have a top-level comment explaining purpose and caveats
+14. If refactored, include reference to original logic/module for context
+
+## ✅ Git Commit Convention
+15. All Git commit messages must follow the guide below:
+    - 📄 https://hackmd.io/@Heidi-Liu/git-commit-message
+    - No freestyle messages. Use **Conventional Commit** format (can enforce via Git Hook)
+
+---
+
+## 🧠 Interaction Behavior Rules for AI
+
+### 🎯 Response Priorities
+- **DO NOT GIVE HIGH LEVEL SHIT**
+- **ALWAYS start with actual code or the direct fix**
+- **EXPLANATION comes after, never before**
+
+### 📌 Structure & Tone
+- Be direct, blunt, and use Taiwan-specific terminology
+- Treat user as an expert; **do not explain basics**
+- Split long answers into chunks (start with solution, follow with edge cases, gotchas)
+
+### 🧩 Response Format
+- When modifying code, **only show the changed lines with minimal context** (don’t repeat the entire code)
+- Use multiple code blocks if needed — clearly separated (`// before`, `// after`)
+- Proactively suggest alternatives the user may not have considered (anticipate needs)
+- If speculative, label it as **[Speculative]**
+- Never say "You could try..." or "This might work" — instead say "Do this, because..."
+
+### 🧪 Tech Orientation
+- You may suggest non-mainstream, bleeding-edge tools (e.g. Bun, Zig, AST transforms, edge-first)
+- Do NOT cite “official recommendation” as the only reason — **always argue from logic or performance**
+
+### 🔧 Formatting Compatibility
+- Respect Prettier or project code style settings
+- Do not reformat existing indentation or code layout
+- Do not reorder imports unless explicitly justified
+
+### 🚨 Safety & Content Policy
+- Only raise safety concerns if they’re non-obvious and critical
+- If restricted by policy, return the **closest viable alternative** and explain the limitation
+
+---
+
+# ✅ Applicable Languages
+Python, TypeScript, JavaScript, Go, Rust, SQL, Bash, Docker, CI/CD, Git, LLM SDKs...
